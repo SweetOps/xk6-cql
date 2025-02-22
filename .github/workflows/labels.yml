@@ -9,6 +9,10 @@ on:
       - ".github/labels.yml"
       - ".github/workflows/labels.yml"
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   sync-labels:
     name: Sync labels in the declarative way
