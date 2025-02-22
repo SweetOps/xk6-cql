@@ -1,0 +1,17 @@
+FROM grafana/xk6:0.14.3 as builder
+ARG TARGETOS
+ENV K6_VERSION=v0.57.0
+ENV GOOS=${TARGETOS}
+
+COPY --chown=1000:1000 . /k6-cql
+RUN xk6 build \
+    --with github.com/sweetops/xk6-cql=/k6-cql/ \
+    --output /tmp/k6 \
+    ${K6_VERSION}
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=builder /tmp/k6 /k6
+
+COPY examples /home/nonroot/examples
+
+ENTRYPOINT [ "/k6" ]
