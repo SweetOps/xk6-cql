@@ -8,6 +8,10 @@ on:
       - synchronize
   pull_request:
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   lint-pr:
     runs-on: ubuntu-latest
