@@ -2,7 +2,6 @@ package cql_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -31,20 +30,17 @@ func Test_CQL(t *testing.T) {
 	}
 	defer c.Terminate(ctx) //nolint:errcheck // Error is not important here
 
-	// host, err := c.ConnectionHost(ctx)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	ip, err := c.ContainerIP(ctx)
+	host, err := c.ConnectionHost(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	time.Sleep(30 * time.Second)
 
 	cql := xk6_cql.CQL{}
 
 	err = cql.Session(xk6_cql.Config{
-		Hosts:    []string{fmt.Sprintf("%s:9042", ip)},
+		Hosts:    []string{host},
 		Keyspace: "system",
 	})
 	require.NoError(t, err)
