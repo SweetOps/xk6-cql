@@ -7,6 +7,7 @@ import (
 
 	xk6_cql "github.com/SweetOps/xk6-cql"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go/modules/cassandra"
 )
 
@@ -41,7 +42,7 @@ func Test_CQL(t *testing.T) {
 		Hosts:    []string{host},
 		Keyspace: "system",
 	})
-	assert.NoError(t, err) //nolint:testifylint // This is the right function to use
+	require.NoError(t, err)
 
 	err = cql.Exec("SELECT * FROM local")
 	assert.NoError(t, err)
