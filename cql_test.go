@@ -27,7 +27,7 @@ func Test_CQL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer c.Terminate(ctx)
+	defer c.Terminate(ctx) //nolint:errcheck // Error is not important here
 
 	host, err := c.ConnectionHost(ctx)
 	if err != nil {
@@ -41,7 +41,7 @@ func Test_CQL(t *testing.T) {
 		Hosts:    []string{host},
 		Keyspace: "system",
 	})
-	assert.NoError(t, err)
+	assert.NoError(t, err) //nolint:testifylint // This is the right function to use
 
 	err = cql.Exec("SELECT * FROM local")
 	assert.NoError(t, err)
