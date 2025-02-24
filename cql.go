@@ -132,8 +132,14 @@ func (cql *CQL) Batch(batchType string, queries []string) error {
 
 	bType := cql.resolveBatchType(batchType)
 	b := cql.session.NewBatch(bType)
+
 	for _, query := range queries {
-		b.Query(query)
+		b.Entries = append(
+			b.Entries,
+			gocql.BatchEntry{
+				Stmt: query,
+			},
+		)
 	}
 
 	return cql.session.ExecuteBatch(b)
