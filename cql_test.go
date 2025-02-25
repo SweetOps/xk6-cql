@@ -42,20 +42,20 @@ func Test_CQL(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = cql.Exec("CREATE KEYSPACE IF NOT EXISTS test_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};")
+	err = cql.Exec("CREATE KEYSPACE IF NOT EXISTS test_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};") //nolint:lll // Long line
 	require.NoError(t, err)
 
 	err = cql.Session(xk6_cql.Config{
 		Hosts:    []string{host},
 		Keyspace: "test_keyspace",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = cql.Exec("CREATE TABLE IF NOT EXISTS test_table (id INT PRIMARY KEY, name TEXT);")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = cql.Exec("INSERT INTO test_table (id, name) VALUES (1, 'test');")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	batchQueries := []string{
 		"INSERT INTO test_table (id, name) VALUES (2, 'test2')",
