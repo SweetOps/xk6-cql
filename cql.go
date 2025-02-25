@@ -25,12 +25,13 @@ type CQL struct {
 }
 
 type Config struct {
-	Timeout  string    `json:"timeout"`
-	Hosts    []string  `json:"hosts"`
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	Keyspace string    `json:"keyspace"`
-	TLS      ConfigTLS `json:"tls"`
+	Timeout         string    `json:"timeout"`
+	Hosts           []string  `json:"hosts"`
+	Username        string    `json:"username"`
+	Password        string    `json:"password"`
+	Keyspace        string    `json:"keyspace"`
+	ProtocolVersion int       `json:"protocol_version"`
+	TLS             ConfigTLS `json:"tls"`
 }
 
 type ConfigTLS struct {
@@ -66,15 +67,22 @@ func (cql *CQL) Session(cfg Config) error {
 
 	cluster := gocql.NewCluster(cfg.Hosts...)
 	cluster.Keyspace = cfg.Keyspace
+	cluster.Consistency = gocql.Quorum
+
+	if cfg.ProtocolVersion != 0 {
+		cluster.ProtoVersion = cfg.ProtocolVersion
+	}
 
 	if cfg.Timeout == "" {
 		cluster.Timeout = ConnectionTimeout
+		cluster.ConnectTimeout = ConnectionTimeout
 	} else {
 		timeout, err := time.ParseDuration(cfg.Timeout)
 		if err != nil {
 			return errors.New("invalid timeout value: " + err.Error())
 		}
 		cluster.Timeout = timeout
+		cluster.ConnectTimeout = timeout
 	}
 
 	if cfg.Username != "" && cfg.Password != "" {

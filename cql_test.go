@@ -3,7 +3,6 @@ package cql_test
 import (
 	"context"
 	"testing"
-	"time"
 
 	xk6_cql "github.com/SweetOps/xk6-cql"
 	"github.com/stretchr/testify/assert"
@@ -35,8 +34,6 @@ func Test_CQL(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	time.Sleep(30 * time.Second)
-
 	cql := xk6_cql.CQL{}
 
 	err = cql.Session(xk6_cql.Config{
@@ -45,6 +42,27 @@ func Test_CQL(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = cql.Exec("SELECT * FROM local")
+	err = cql.Exec("CREATE KEYSPACE IF NOT EXISTS test_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};")
+	require.NoError(t, err)
+
+	err = cql.Session(xk6_cql.Config{
+		Hosts:    []string{host},
+		Keyspace: "test_keyspace",
+	})
+	assert.NoError(t, err)
+
+	err = cql.Exec("CREATE TABLE IF NOT EXISTS test_table (id INT PRIMARY KEY, name TEXT);")
+	assert.NoError(t, err)
+
+	err = cql.Exec("INSERT INTO test_table (id, name) VALUES (1, 'test');")
+	assert.NoError(t, err)
+
+	batchQueries := []string{
+		"INSERT INTO test_table (id, name) VALUES (2, 'test2')",
+		"INSERT INTO test_table (id, name) VALUES (3, 'test3')",
+		"INSERT INTO test_table (id, name) VALUES (4, 'test4')",
+	}
+
+	err = cql.Batch("", batchQueries)
 	assert.NoError(t, err)
 }

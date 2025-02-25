@@ -10,7 +10,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  golangci:
+  ci:
     name: lint
     runs-on: ubuntu-latest
     steps:
@@ -23,3 +23,6 @@ jobs:
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
+
+      - name: Run tests
+        run: go test -v ./...
