@@ -23,7 +23,7 @@ The following table describes the available configuration options for connecting
 | **`cert_path`** | `string` | `""` | No | Path to the client certificate file. |
 | **`key_path`** | `string` | `""` | No | Path to the client private key file. |
 | **`ca_path`** | `string` | `""` | No | Path to the CA certificate file for verifying the server. |
-| **`enable_host_verification`** | `false` | `true` | No | Whether to verify the server hostname in the TLS certificate. |
+| **`enable_host_verification`** | `bool` | `false` | No | Whether to verify the server hostname in the TLS certificate. |
 
 
 ### Available Methods
@@ -89,6 +89,7 @@ client.session({
 
 client.close()
 ```
+
 
 ### Build for development
 
