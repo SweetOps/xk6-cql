@@ -16,7 +16,7 @@ func init() {
 }
 
 // RootModule is the global module object type. It is instantiated once per test
-// run and will be used to create `k6/x/exec` module instances for each VU.
+// run and will be used to create `k6/x/cq;` module instances for each VU.
 type RootModule struct{}
 
 type CQL struct {
@@ -31,6 +31,7 @@ type Config struct {
 	Password        string    `json:"password"`
 	Keyspace        string    `json:"keyspace"`
 	ProtocolVersion int       `json:"protocol_version"`
+	Consistency     string    `json:"consistency"`
 	TLS             ConfigTLS `json:"tls"`
 }
 
@@ -67,7 +68,7 @@ func (cql *CQL) Session(cfg Config) error {
 
 	cluster := gocql.NewCluster(cfg.Hosts...)
 	cluster.Keyspace = cfg.Keyspace
-	cluster.Consistency = gocql.Quorum
+	cluster.Consistency = cql.resolveConsistency(cfg.Consistency)
 
 	if cfg.ProtocolVersion != 0 {
 		cluster.ProtoVersion = cfg.ProtocolVersion
@@ -76,6 +77,7 @@ func (cql *CQL) Session(cfg Config) error {
 	if cfg.Timeout == "" {
 		cluster.Timeout = ConnectionTimeout
 		cluster.ConnectTimeout = ConnectionTimeout
+		cluster.WriteTimeout = ConnectionTimeout
 	} else {
 		timeout, err := time.ParseDuration(cfg.Timeout)
 		if err != nil {
@@ -113,7 +115,7 @@ func (cql *CQL) Session(cfg Config) error {
 
 	session, err := cluster.CreateSession()
 	if err != nil {
-		return err
+		return errors.New("failed to create session: " + err.Error())
 	}
 	cql.session = session
 	return nil
@@ -155,6 +157,31 @@ func (cql *CQL) resolveBatchType(batchType string) gocql.BatchType {
 		return gocql.CounterBatch
 	default:
 		return gocql.LoggedBatch
+	}
+}
+
+func (cql *CQL) resolveConsistency(consistency string) gocql.Consistency {
+	switch consistency {
+	case "all":
+		return gocql.All
+	case "any":
+		return gocql.Any
+	case "one":
+		return gocql.One
+	case "two":
+		return gocql.Two
+	case "three":
+		return gocql.Three
+	case "each_quorum":
+		return gocql.EachQuorum
+	case "quorum":
+		return gocql.Quorum
+	case "local_one":
+		return gocql.LocalOne
+	case "local_quorum":
+		return gocql.LocalQuorum
+	default:
+		return gocql.Quorum
 	}
 }
 

@@ -22,6 +22,8 @@ func runCassandra(ctx context.Context, image string) (*cassandra.CassandraContai
 }
 
 func Test_CQL(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 	c, err := runCassandra(ctx, CassandraImage)
 	if err != nil {
@@ -36,10 +38,12 @@ func Test_CQL(t *testing.T) {
 
 	cql := xk6_cql.CQL{}
 
-	err = cql.Session(xk6_cql.Config{
-		Hosts:    []string{host},
-		Keyspace: "system",
-	})
+	err = cql.Session(
+		xk6_cql.Config{
+			Hosts:    []string{host},
+			Keyspace: "system",
+		},
+	)
 	require.NoError(t, err)
 
 	err = cql.Exec("CREATE KEYSPACE IF NOT EXISTS test_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};") //nolint:lll // Long line
@@ -65,4 +69,12 @@ func Test_CQL(t *testing.T) {
 
 	err = cql.Batch("", batchQueries)
 	assert.NoError(t, err)
+}
+
+func Test_CQL_Erros(t *testing.T) {
+	t.Parallel()
+
+	cql := xk6_cql.CQL{}
+	err := cql.Session(xk6_cql.Config{})
+	require.ErrorContains(t, err, "hosts and keyspace are required parameters")
 }
