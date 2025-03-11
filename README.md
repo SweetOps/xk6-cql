@@ -71,8 +71,8 @@ client.session({
 });
 
 client.batch("", [
-        `SELECT * FROM users WHERE id = 'test';`,
-        `SELECT * FROM users WHERE name = 'test';`,
+    `SELECT * FROM users WHERE id = 'test';`,
+    `SELECT * FROM users WHERE name = 'test';`,
     ])
 ```
 
