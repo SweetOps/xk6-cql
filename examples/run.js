@@ -76,5 +76,6 @@ export function stressTest() {
     let name = `User${id}`;
 
     client.exec(`INSERT INTO users (id, name) VALUES (uuid(), '${name}');`);
+
     client.close();
 }
