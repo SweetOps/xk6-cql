@@ -1,4 +1,4 @@
-FROM grafana/xk6:1.0.0 as builder
+FROM grafana/xk6:1.0.1 as builder
 ARG TARGETOS
 ENV K6_VERSION=v0.57.0
 ENV GOOS=${TARGETOS}
