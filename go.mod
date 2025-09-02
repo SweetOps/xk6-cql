@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/gocql/gocql v1.7.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go/modules/cassandra v0.38.0
 	go.k6.io/k6 v1.2.2
 )
